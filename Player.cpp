@@ -1,5 +1,5 @@
 #include "Player.hpp"
-#include "Window.hpp" 
+#include "Window2D.hpp" 
 #include <cmath> // For sin and cos
 #include <optional>
 #include <iostream>
@@ -7,7 +7,7 @@
 Player::Player(size_t x, size_t y, size_t theta) : x(x), y(y), theta(theta) {}
 
 // Returns the distance from the player to the nearest wall where phi is the angle from where the play is looking (theta)
-float Player::find_depth(Window& window, float phi) { 
+float Player::find_depth(Window2D& window, float phi) { 
     float depth = 0;
     while (depth < 1000) {
         float point_x = x + depth * cos(theta + phi);
@@ -32,18 +32,18 @@ float Player::find_depth(Window& window, float phi) {
 
         window.setPixel(screen_x, screen_y, {127, 127, 127});
 
-        depth += 0.1;
+        depth += 0.05;
     
     }
 
     return depth;
 }
 
-std::vector<float> Player::find_pov(Window& window, float pov_angle) {
-    // draw 512 depth rays, 256 to the left and 256 to the right
-    std::vector<float> pov(512, 0);
-    for (int i = -256; i < 256; i++) {
-        pov[i + 256] = find_depth(window, theta + (pov_angle/256 * i)); // also draws the rays
+std::vector<float> Player::find_pov(Window2D& window, float pov_angle) {
+    // draw screen width depth rays, half to the left and half to the right
+    std::vector<float> pov(window.width, 0); 
+    for (int i = int(-window.width/2); i < int(window.width/2); i++) { // int not size_t so that it can be negative but bad I think
+        pov[i + int(window.width/2)] = find_depth(window, theta + (pov_angle/int(window.width/2) * i)); // also draws the rays
     }
 
     return pov;

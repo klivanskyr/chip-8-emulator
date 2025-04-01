@@ -6,33 +6,39 @@
 #include <math.h>
 
 #include "Player.hpp"
-#include "Window.hpp"
+#include "Window2D.hpp"
+#include "Window3D.hpp"
 
-void save_ppm_image(const std::string filename, const Window& window) {
+void save_ppm_image(const std::string filename, const Window2D& window2D, const Window3D& window3D) {
+    //assumes both are same height
     std::ofstream ofs(filename, std::ios::binary);
-    ofs << "P6\n" << window.width << " " << window.height << "\n255\n";
-    for (size_t i = 0; i < window.width * window.height; i++) {
-        const Pixel pixel = window.pixels[i]; 
-        ofs << static_cast<char>(pixel.r) << static_cast<char>(pixel.g) << static_cast<char>(pixel.b);
+
+    size_t combined_width = window2D.width + window3D.width;
+
+    ofs << "P6\n" << combined_width << " " << window2D.height << "\n255\n";
+
+    for (size_t y = 0; y < window2D.height; y++) {
+        for (size_t x = 0; x < combined_width; x++) {
+            Pixel pixel;
+            if (x < window2D.width) { // Left side
+                pixel = window2D.pixels[y * window2D.width + x];
+
+            } else { // Right side
+                size_t x_3D = x - window2D.width; // Shift x for 3D window
+                pixel = window3D.pixels[y * window3D.width + x_3D];
+            }
+
+            ofs << char(pixel.r) << char(pixel.g) << char(pixel.b);
+        }
     }
+
     ofs.close();
 }
 
 int main() {
     const size_t window_width = 512; // Image width
     const size_t window_height = 512; // Image height
-    Window window(window_width, window_height, {255, 0, 0}); // Initialize window with red background
-
-    // Create a gradient from red to green
-    for (size_t i = 0; i < window_width; i++) {
-        for (size_t j = 0; j < window_height; j++) {
-            window.setPixel(i, j, {
-                uint8_t(255*i/float(window_width)),
-                uint8_t(255*j/float(window_height)),
-                0   
-            });
-        }
-    }
+    Window2D window2D(window_width, window_height, {255, 255, 255});
 
     // Split the pixels into a 16x16 grid which we can use to draw maps
     const std::string map_encoding =    "0000000000000000"\
@@ -52,15 +58,19 @@ int main() {
                                         "0              0"\
                                         "0000000000000000";
 
-    window.import_map(map_encoding, 16, 16);
+    window2D.import_map(map_encoding, 16, 16);
 
     // Create player
     Player player(3, 3, 0);
-    window.draw_player(player);
+    window2D.draw_player(player);
 
-    player.find_pov(window, M_PI/6);
+    std::vector<float> depths = player.find_pov(window2D, M_PI/6);
 
-    save_ppm_image("test.ppm", window);
+    // Draw The 3D view
+    Window3D window3D(window_height, window_width, depths);
+
+
+    save_ppm_image("test.ppm", window2D, window3D);
 
     return 0;
 }
