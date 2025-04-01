@@ -64,13 +64,20 @@ int main() {
     Player player(3, 3, 0);
     window2D.draw_player(player);
 
-    std::vector<float> depths = player.find_pov(window2D, M_PI/6);
+    // Create Spinning Animation
+    for (size_t i = 0; i < 360; i++) {
+        std::vector<float> depths = player.find_pov(window2D, M_PI/6);
 
-    // Draw The 3D view
-    Window3D window3D(window_height, window_width, depths);
+        // Draw The 3D view
+        Window3D window3D(window_height, window_width, depths);
 
+        save_ppm_image("images/" + std::to_string(i) + ".ppm", window2D, window3D);
 
-    save_ppm_image("test.ppm", window2D, window3D);
+        float change = 2*M_PI/360;
+        player.theta += change;
+        window2D.clear_window(); // resets window
+
+    }
 
     return 0;
 }

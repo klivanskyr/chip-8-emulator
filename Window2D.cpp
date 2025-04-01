@@ -88,3 +88,15 @@ void Window2D::import_map(const std::string map_encoding, size_t num_tiles_x, si
         }
     }
 }
+
+// Clears the window while keeping the map intact
+void Window2D::clear_window() {
+    for (size_t y = 0; y < height; ++y) {
+        for (size_t x = 0; x < width; ++x) {
+            pixels[y * width + x] = {255, 255, 255}; // Assuming white is the default clear color
+        }
+    }
+
+    // Redraw the map to keep it intact
+    import_map(map_encoding, num_tiles_x, num_tiles_y);
+}

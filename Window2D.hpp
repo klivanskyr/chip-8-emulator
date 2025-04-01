@@ -32,6 +32,7 @@ public:
     void import_map(const std::string map_encoding, size_t num_tiles_x, size_t num_tiles_y);
     void draw_player(Player& player);
     void draw_rectangle(size_t x1, size_t y1, size_t x2, size_t y2, Pixel color);
+    void clear_window();
 };
 
 #endif
