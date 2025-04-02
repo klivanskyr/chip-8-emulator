@@ -1,14 +1,23 @@
 #include "Window3D.hpp"
 #include "Window2D.hpp"
-#include <vector>
+#include "Player.hpp"
 
-Window3D::Window3D(size_t w, size_t h, std::vector<float> depths) : width(w), height(h), depths(depths), pixels(w * h, {255, 255, 255}) {
+#include <vector>
+#include <cmath> // For sin and cos
+#include <iostream>
+
+Window3D::Window3D(size_t w, size_t h, std::vector<Depth> depths) : width(w), height(h), depths(depths), pixels(w * h, {255, 255, 255}) {
     for (size_t i = 0; i < depths.size(); i++) {
         // Ensure depth is nonzero to avoid division by zero
-        if (depths[i] <= 0.01f) continue;
+        if (depths[i].distance == 0.0f) continue;
 
         // How many pixels should the wall be?
-        float inverse = 1 / depths[i];
+        float inverse;
+        if ((depths[i].distance * float(cos(depths[i].phi))) == 0.0f) {
+            inverse = 1; // Super close to the wall takes up whole screen
+        } else {
+            inverse = 1 / (depths[i].distance * float(cos(depths[i].phi))); // cos gets rid of fisheye
+        }
         // what is the ratio of this in terms of height of pixels
         size_t wall_height = size_t(height * inverse);
 

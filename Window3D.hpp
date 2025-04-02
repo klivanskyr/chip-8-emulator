@@ -3,16 +3,22 @@
 
 #include <cstdint>
 #include <vector>
-#include "Window2D.hpp"
+
+struct Pixel;
+
+struct Depth {
+    float distance; // distance to wall
+    float phi; // angle from player theta 
+};
 
 class Window3D {
     public: 
         size_t height;
         size_t width;
         std::vector<Pixel> pixels;
-        std::vector<float> depths;
+        std::vector<Depth> depths;
 
-    Window3D(size_t height, size_t width, std::vector<float> depths);
+    Window3D(size_t height, size_t width, std::vector<Depth> depths);
 };
 
 #endif

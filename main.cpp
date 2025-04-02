@@ -66,7 +66,8 @@ int main() {
 
     // Create Spinning Animation
     for (size_t i = 0; i < 360; i++) {
-        std::vector<float> depths = player.find_pov(window2D, M_PI/6);
+        std::cout << "Frame " << i << std::endl;
+        std::vector<Depth> depths = player.find_pov(window2D, M_PI/6);
 
         // Draw The 3D view
         Window3D window3D(window_height, window_width, depths);

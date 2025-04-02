@@ -1,4 +1,6 @@
 #include "Window2D.hpp"
+#include "Player.hpp"
+
 #include <fstream>
 #include <optional>
 #include <iostream>

@@ -5,7 +5,8 @@
 #include <string>
 #include <cstdint>
 #include <optional>
-#include "Player.hpp"
+
+class Player;
 
 struct Pixel {
     uint8_t r;
